@@ -480,11 +480,12 @@
                 // For hourly view, show only start date (single day selection)
                 dateFilters.style.display = 'flex';
                 endDateFilter.style.display = 'none';
-                // Set end date to same as start date for hourly view
-                const startDate = document.getElementById('start-date').value;
-                if (startDate) {
-                    document.getElementById('end-date').value = startDate;
-                }
+                
+                // Set start date to today for hourly view
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0];
+                document.getElementById('start-date').value = todayString;
+                document.getElementById('end-date').value = todayString;
             }
             
             loadHistoryData();
@@ -549,12 +550,14 @@
             dailyData.forEach(item => {
                 const consumption = parseFloat(item.daily_consumption) || 0;
                 totalConsumption += consumption;
-                
-                // Calculate cost: first 10 kWh free per day, then €0.50/kWh
-                if (consumption > 10) {
-                    totalCost += (consumption - 10) * 0.50;
-                }
             });
+            
+            // Calculate cost: first 10 kWh free per day, then €0.50/kWh
+            // Total free allowance = number of days × 10 kWh
+            const totalFreeAllowance = dailyData.length * 10;
+            if (totalConsumption > totalFreeAllowance) {
+                totalCost = (totalConsumption - totalFreeAllowance) * 0.50;
+            }
             
             console.log('Calculated totals:', { totalConsumption, totalCost });
             
