@@ -300,8 +300,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚡ Tuya Smart Meter</h1>
-            <p>Electricity Monitor - Cyprus</p>
+            <h1>⚡ Akamas garden H5</h1>
+            <p>smart meter electricity monitor</p>
         </div>
         
         <div class="main-content">
@@ -322,7 +322,7 @@
                     </div>
                     <div class="status-item">
                         <div id="current-power" class="status-value">-</div>
-                        <div class="status-label">Current Power</div>
+                        <div class="status-label">Daily Estimate</div>
                     </div>
                     <div class="status-item">
                         <div id="last-update" class="status-value">-</div>
@@ -420,12 +420,10 @@
                     parseFloat(totalConsumption.value).toFixed(2) + ' kWh';
             }
             
-            // Current power
-            const currentPower = data.consumption_data.find(item => item.code === 'total_power');
-            if (currentPower) {
-                const power = parseFloat(currentPower.value);
+            // Daily estimate
+            if (data.estimated_daily_consumption_kwh) {
                 document.getElementById('current-power').textContent = 
-                    (power * 1000).toFixed(0) + ' W';
+                    parseFloat(data.estimated_daily_consumption_kwh).toFixed(2) + ' kWh';
             }
             
 
