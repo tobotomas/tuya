@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuya Smart Meter - English</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #86868b;
+            font-size: 16px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .status-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-indicator.online {
+            background: #e8f5e8;
+            color: #2d7d32;
+        }
+        
+        .status-indicator.offline {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        
+        .status-label {
+            font-size: 14px;
+            color: #86868b;
+            font-weight: 500;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        
+        .daily-consumption {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .daily-consumption-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .daily-consumption-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .daily-cost-info {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .daily-cost-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ff6b6b;
+            margin-bottom: 2px;
+        }
+        
+        .daily-cost-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #007aff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056cc;
+        }
+        
+        .btn-secondary {
+            background: #f2f2f7;
+            color: #1d1d1f;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e5ea;
+        }
+        
+        .tariff-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007aff;
+        }
+        
+        .tariff-text {
+            font-size: 14px;
+            color: #1d1d1f;
+            line-height: 1.4;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #86868b;
+            font-size: 16px;
+        }
+        
+        .error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #c62828;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Tuya Smart Meter</h1>
+            <p>Electricity Monitor - Cyprus</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Status Card -->
+            <div class="status-card">
+                <div class="status-header">
+                    <h2 class="status-title">Meter Status</h2>
+                    <div id="device-status" class="status-indicator offline">
+                        <div class="status-dot"></div>
+                        <span>Offline</span>
+                    </div>
+                </div>
+                
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div id="total-consumption" class="status-value">-</div>
+                        <div class="status-label">Total Consumption</div>
+                    </div>
+                    <div class="status-item">
+                        <div id="current-power" class="status-value">-</div>
+                        <div class="status-label">Current Power</div>
+                    </div>
+                    <div class="status-item">
+                        <div id="last-update" class="status-value">-</div>
+                        <div class="status-label">Last Update</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart Card -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">Daily Consumption</h2>
+                    <div class="daily-consumption">
+                        <div id="daily-consumption-value" class="daily-consumption-value">0.00</div>
+                        <div id="daily-consumption-label" class="daily-consumption-label">kWh today</div>
+                        <div id="daily-cost-info" class="daily-cost-info" style="display: none;">
+                            <div id="daily-cost-amount" class="daily-cost-amount">€0.00</div>
+                            <div class="daily-cost-label">additional cost</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="filter-group" id="date-filters" style="display: none;">
+                        <label for="start-date">From:</label>
+                        <input type="date" id="start-date" onchange="loadHistoryData()">
+                    </div>
+                    <div class="filter-group" id="end-date-filter" style="display: none;">
+                        <label for="end-date">To:</label>
+                        <input type="date" id="end-date" onchange="loadHistoryData()">
+                    </div>
+                    <div class="filter-group">
+                        <label for="chart-type">View:</label>
+                        <select id="chart-type" onchange="toggleDateFilters()">
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="loadHistoryData()">Load Data</button>
+                        <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                    </div>
+                </div>
+                
+                <!-- Tariff Info -->
+                <div class="tariff-info">
+                    <div class="tariff-text">
+                        <strong>Electricity Tariff:</strong> First 10 kWh daily are free of charge. 
+                        Additional consumption: <strong>€0.50/kWh</strong>
+                    </div>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="consumption-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let chart = null;
+        
+        // Auto-load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentData();
+            setupDateFilters();
+            loadHistoryData();
+        });
+        
+        // Load current meter data
+        async function loadCurrentData() {
+            try {
+                const response = await fetch('api.php/consumption');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCurrentData(data.data);
+                } else {
+                    showError('Failed to load current data');
+                }
+            } catch (error) {
+                showError('Error loading data: ' + error.message);
+            }
+        }
+        
+        // Update current data display
+        function updateCurrentData(data) {
+            // Total consumption
+            const totalConsumption = data.consumption_data.find(item => item.code === 'total_forward_energy');
+            if (totalConsumption) {
+                document.getElementById('total-consumption').textContent = 
+                    parseFloat(totalConsumption.value).toFixed(2) + ' kWh';
+            }
+            
+            // Current power
+            const currentPower = data.consumption_data.find(item => item.code === 'total_power');
+            if (currentPower) {
+                const power = parseFloat(currentPower.value);
+                document.getElementById('current-power').textContent = 
+                    (power * 1000).toFixed(0) + ' W';
+            }
+            
+
+            
+            // Last update
+            document.getElementById('last-update').textContent = 
+                new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            
+            // Device status
+            document.getElementById('device-status').className = 'status-indicator online';
+            document.getElementById('device-status').innerHTML = 
+                '<div class="status-dot"></div><span>Online</span>';
+        }
+        
+        // Show error
+        function showError(message) {
+            document.getElementById('device-status').className = 'status-indicator offline';
+            document.getElementById('device-status').innerHTML = 
+                '<div class="status-dot"></div><span>Offline</span>';
+            document.getElementById('total-consumption').textContent = 'N/A';
+            document.getElementById('current-power').textContent = 'N/A';
+            document.getElementById('last-update').textContent = message;
+        }
+        
+        // Setup default date filters
+        function setupDateFilters() {
+            const today = new Date();
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 7);
+            
+            // Set default dates
+            document.getElementById('end-date').value = today.toISOString().split('T')[0];
+            document.getElementById('start-date').value = lastWeek.toISOString().split('T')[0];
+            
+            // Initialize date filters based on current chart type
+            toggleDateFilters();
+        }
+        
+        // Toggle date filters based on chart type
+        function toggleDateFilters() {
+            const chartType = document.getElementById('chart-type').value;
+            const dateFilters = document.getElementById('date-filters');
+            const endDateFilter = document.getElementById('end-date-filter');
+            
+            if (chartType === 'daily') {
+                dateFilters.style.display = 'flex';
+                endDateFilter.style.display = 'flex';
+            } else {
+                // For hourly view, show only start date (single day selection)
+                dateFilters.style.display = 'flex';
+                endDateFilter.style.display = 'none';
+                // Set end date to same as start date for hourly view
+                const startDate = document.getElementById('start-date').value;
+                if (startDate) {
+                    document.getElementById('end-date').value = startDate;
+                }
+            }
+            
+            loadHistoryData();
+        }
+        
+        // Load historical data
+        async function loadHistoryData() {
+            const chartType = document.getElementById('chart-type').value;
+            let startDate, endDate;
+            
+            if (chartType === 'daily') {
+                startDate = document.getElementById('start-date').value;
+                endDate = document.getElementById('end-date').value;
+                
+                if (!startDate || !endDate) {
+                    showHistoryError('Please select date range');
+                    return;
+                }
+            } else {
+                // For hourly view, use selected date or today's date
+                startDate = document.getElementById('start-date').value;
+                if (!startDate) {
+                    const today = new Date();
+                    startDate = today.toISOString().split('T')[0];
+                    document.getElementById('start-date').value = startDate;
+                }
+                endDate = startDate; // For hourly view, start and end are the same day
+            }
+            
+            try {
+                // Load daily data for daily consumption
+                const dailyResponse = await fetch(`api.php/database?start_date=${startDate}&end_date=${endDate}&type=daily`);
+                const dailyData = await dailyResponse.json();
+                
+                // Load chart data
+                const chartResponse = await fetch(`api.php/database?start_date=${startDate}&end_date=${endDate}&type=${chartType}`);
+                const chartData = await chartResponse.json();
+                
+                if (dailyData.success && chartData.success) {
+                    displayHistoryData(dailyData.data, chartData.data, chartType);
+                } else {
+                    showHistoryError('Failed to load historical data');
+                }
+            } catch (error) {
+                showHistoryError('Error loading data: ' + error.message);
+            }
+        }
+        
+        // Display historical data
+        function displayHistoryData(dailyData, chartData, chartType) {
+            console.log('displayHistoryData called:', { dailyData, chartData, chartType });
+            
+            if (dailyData.length === 0) {
+                showHistoryError('No data for selected period');
+                return;
+            }
+            
+            // Calculate total consumption and costs
+            let totalConsumption = 0;
+            let totalCost = 0;
+            
+            dailyData.forEach(item => {
+                const consumption = parseFloat(item.daily_consumption) || 0;
+                totalConsumption += consumption;
+                
+                // Calculate cost: first 10 kWh free per day, then €0.50/kWh
+                if (consumption > 10) {
+                    totalCost += (consumption - 10) * 0.50;
+                }
+            });
+            
+            console.log('Calculated totals:', { totalConsumption, totalCost });
+            
+            // Update display
+            if (chartType === 'hourly') {
+                // For hourly view, show selected day's consumption
+                const selectedDayConsumption = parseFloat(dailyData[0].daily_consumption) || 0;
+                document.getElementById('daily-consumption-value').textContent = selectedDayConsumption.toFixed(2);
+                
+                // Show date in label
+                const selectedDate = new Date(document.getElementById('start-date').value);
+                const isToday = selectedDate.toDateString() === new Date().toDateString();
+                document.getElementById('daily-consumption-label').textContent = 
+                    isToday ? 'kWh today' : `kWh on ${selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                
+                // Show cost for selected day - calculate per day (10kWh free per day)
+                const selectedDayCost = selectedDayConsumption > 10 ? (selectedDayConsumption - 10) * 0.50 : 0;
+                updateCostDisplay(selectedDayConsumption, 1, selectedDayCost);
+            } else {
+                // For daily view, show total consumption
+                document.getElementById('daily-consumption-value').textContent = totalConsumption.toFixed(2);
+                
+                // Update label based on number of days
+                if (dailyData.length === 1) {
+                    document.getElementById('daily-consumption-label').textContent = 'kWh today';
+                } else {
+                    document.getElementById('daily-consumption-label').textContent = `kWh (${dailyData.length} days)`;
+                }
+                
+                // Show total cost for selected period - each day gets 10kWh free
+                updateCostDisplay(totalConsumption, dailyData.length, totalCost);
+            }
+            
+            // Create chart
+            createChart(chartData, chartType, totalConsumption);
+        }
+        
+        // Update cost display
+        function updateCostDisplay(consumption, days, totalCost = null) {
+            const costInfo = document.getElementById('daily-cost-info');
+            const costAmount = document.getElementById('daily-cost-amount');
+            
+            console.log('updateCostDisplay called:', { consumption, days, totalCost });
+            
+            if (totalCost !== null) {
+                // Use provided total cost (for multiple days)
+                console.log('Using totalCost:', totalCost);
+                costAmount.textContent = `€${totalCost.toFixed(2)}`;
+                if (totalCost > 0) {
+                    costAmount.style.color = '#ff6b6b';
+                } else {
+                    costAmount.style.color = '#34c759'; // Green for no additional cost
+                }
+                costInfo.style.display = 'block';
+            } else {
+                // Calculate cost for single day
+                const cost = consumption > 10 ? (consumption - 10) * 0.50 : 0;
+                console.log('Calculated cost for single day:', cost);
+                costAmount.textContent = `€${cost.toFixed(2)}`;
+                if (cost > 0) {
+                    costAmount.style.color = '#ff6b6b';
+                } else {
+                    costAmount.style.color = '#34c759'; // Green for no additional cost
+                }
+                costInfo.style.display = 'block';
+            }
+        }
+        
+        // Create chart
+        function createChart(data, chartType, dailyConsumption) {
+            const canvas = document.getElementById('consumption-chart');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear previous chart
+            if (chart) {
+                chart.destroy();
+            }
+            
+            if (!data || data.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#86868b';
+                ctx.font = '16px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Prepare data based on chart type
+            let labels = [];
+            let consumptionData = [];
+            
+            if (chartType === 'hourly') {
+                // Hourly data - show all 24 hours
+                const hourlyConsumption = new Array(24).fill(0);
+                
+                data.forEach(item => {
+                    const hour = parseInt(item.hour);
+                    if (hour >= 0 && hour < 24) {
+                        hourlyConsumption[hour] = parseFloat(item.hourly_consumption) || 0;
+                    }
+                });
+                
+                for (let i = 0; i < 24; i++) {
+                    labels.push(i.toString().padStart(2, '0') + ':00');
+                    consumptionData.push(hourlyConsumption[i]);
+                }
+            } else {
+                // Daily data
+                data.forEach(item => {
+                    const date = new Date(item.date);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    consumptionData.push(parseFloat(item.daily_consumption) || 0);
+                });
+            }
+            
+            // Create chart
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Consumption (kWh)',
+                        data: consumptionData,
+                        backgroundColor: consumptionData.map((value, index) => {
+                            if (chartType === 'hourly') {
+                                const currentHour = new Date().getHours();
+                                const selectedDate = new Date(document.getElementById('start-date').value);
+                                const isToday = selectedDate.toDateString() === new Date().toDateString();
+                                return (isToday && index === currentHour) ? '#007aff' : '#d2d2d7';
+                            } else {
+                                return '#007aff';
+                            }
+                        }),
+                        borderColor: consumptionData.map((value, index) => {
+                            if (chartType === 'hourly') {
+                                const currentHour = new Date().getHours();
+                                const selectedDate = new Date(document.getElementById('start-date').value);
+                                const isToday = selectedDate.toDateString() === new Date().toDateString();
+                                return (isToday && index === currentHour) ? '#0056cc' : '#a6a6a6';
+                            } else {
+                                return '#0056cc';
+                            }
+                        }),
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barThickness: chartType === 'hourly' ? 8 : 20,
+                        maxBarThickness: chartType === 'hourly' ? 12 : 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: chartType === 'hourly',
+                            text: chartType === 'hourly' ? 
+                                `Hourly consumption for ${new Date(document.getElementById('start-date').value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : 
+                                '',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#1d1d1f'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f2f2f7'
+                            },
+                            ticks: {
+                                color: '#86868b',
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' kWh';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#86868b',
+                                maxTicksLimit: chartType === 'hourly' ? 12 : 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Show history error
+        function showHistoryError(message) {
+            document.getElementById('daily-consumption-value').textContent = '0.00';
+            document.getElementById('daily-consumption-label').textContent = 'kWh today';
+            document.getElementById('daily-cost-info').style.display = 'none';
+            
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+            
+            const canvas = document.getElementById('consumption-chart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#c62828';
+            ctx.font = '16px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+        }
+        
+        // Reset filters
+        function resetFilters() {
+            setupDateFilters();
+            document.getElementById('chart-type').value = 'hourly';
+            loadHistoryData();
+        }
+    </script>
+</body>
+</html>

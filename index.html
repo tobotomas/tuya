@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuya Smart Meter API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .content {
+            padding: 30px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .endpoint h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .endpoint p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 5px 5px 5px 0;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-info { background: #17a2b8; }
+        .btn-info:hover { background: #138496; }
+        .response {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .current-data {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        .data-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .data-value {
+            font-weight: 500;
+            color: #212529;
+        }
+        .data-value.online {
+            color: #28a745;
+        }
+        .data-value.offline {
+            color: #dc3545;
+        }
+        .data-value.loading {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .period-selector {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 20px;
+            max-width: 300px;
+        }
+        .period-btn {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+        .period-btn.active {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        .period-btn:hover:not(.active) {
+            background: #e9ecef;
+            color: #495057;
+        }
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 50%;
+            font-size: 18px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+        .current-date {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            min-width: 80px;
+            text-align: center;
+        }
+        .consumption-display {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        .consumption-value {
+            margin-bottom: 10px;
+        }
+        .consumption-number {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .consumption-unit {
+            font-size: 18px;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+        .consumption-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .lightning-icon {
+            font-size: 20px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .additional-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔌 Tuya Smart Meter API</h1>
+            <p>Elektroměr Kypr - bf6588df88241b2942f5fq</p>
+        </div>
+        
+        <div class="content">
+            <!-- Aktuální stav a spotřeba -->
+            <div class="endpoint">
+                <h3>📊 Aktuální stav elektroměru</h3>
+                <div id="current-status" class="current-data">
+                    <div class="data-item">
+                        <span class="data-label">Stav:</span>
+                        <span id="device-status" class="data-value">Načítám...</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Celková spotřeba:</span>
+                        <span id="total-consumption" class="data-value">Načítám...</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Aktuální výkon:</span>
+                        <span id="current-power" class="data-value">Načítám...</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Napětí:</span>
+                        <span id="voltage" class="data-value">Načítám...</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Poslední aktualizace:</span>
+                        <span id="last-update" class="data-value">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <h3>📈 Historická spotřeba</h3>
+                
+                <!-- Period Selector -->
+                <div class="period-selector">
+                    <button class="period-btn active" data-period="day" onclick="setPeriod('day')">Den</button>
+                    <button class="period-btn" data-period="week" onclick="setPeriod('week')">Týden</button>
+                    <button class="period-btn" data-period="month" onclick="setPeriod('month')">Měsíc</button>
+                </div>
+                
+                <!-- Date Navigation -->
+                <div class="date-navigation">
+                    <button class="nav-btn" onclick="changeDate(-1)">‹</button>
+                    <span id="current-date-display" class="current-date">Sep 2</span>
+                    <button class="nav-btn" onclick="changeDate(1)">›</button>
+                </div>
+                
+                <!-- Consumption Display -->
+                <div class="consumption-display">
+                    <div class="consumption-value">
+                        <span id="total-consumption-display" class="consumption-number">0.00</span>
+                        <span class="consumption-unit">kWh</span>
+                    </div>
+                    <div class="consumption-label">
+                        <span class="lightning-icon">⚡</span>
+                        <span>Celková spotřeba</span>
+                    </div>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="consumption-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <!-- Additional Stats -->
+                <div class="additional-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-power-display">0 W</div>
+                        <div class="stat-label">Průměrný výkon</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="max-power-display">0 W</div>
+                        <div class="stat-label">Maximální výkon</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="measurements-count">0</div>
+                        <div class="stat-label">Počet měření</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <h3>⚡ Detailní vlastnosti</h3>
+                <p>Získání detailních vlastností a hodnot elektroměru</p>
+                <a href="#" class="btn btn-info" onclick="callAPI('/properties')">Získat vlastnosti</a>
+                <div id="properties-response" class="response" style="display: none;"></div>
+            </div>
+            
+
+            
+            <div class="endpoint">
+                <h3>ℹ️ Informace o API</h3>
+                <p>Základní informace o API a dostupných endpointech</p>
+                <a href="#" class="btn" onclick="callAPI('/info')">Zobrazit info</a>
+                <div id="info-response" class="response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Globální proměnné
+        let currentPeriod = 'day';
+        let currentDate = new Date();
+        let chart = null;
+        
+        // Automatické načítání aktuálních dat při načtení stránky
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentData();
+            setupHistoryInterface();
+            loadHistoryData();
+        });
+        
+        // Načtení aktuálních dat
+        async function loadCurrentData() {
+            try {
+                // Načtení spotřeby
+                const consumptionResponse = await fetch('api.php/consumption');
+                const consumptionData = await consumptionResponse.json();
+                
+                if (consumptionData.success) {
+                    updateCurrentData(consumptionData.data);
+                } else {
+                    showError('Chyba při načítání dat spotřeby');
+                }
+            } catch (error) {
+                showError('Chyba při načítání dat: ' + error.message);
+            }
+        }
+        
+        // Aktualizace aktuálních dat na stránce
+        function updateCurrentData(data) {
+            // Celková spotřeba
+            const totalConsumption = data.consumption_data.find(item => item.code === 'total_forward_energy');
+            if (totalConsumption) {
+                document.getElementById('total-consumption').textContent = 
+                    parseFloat(totalConsumption.value).toFixed(2) + ' kWh';
+            }
+            
+            // Aktuální výkon
+            const currentPower = data.consumption_data.find(item => item.code === 'total_power');
+            if (currentPower) {
+                const power = parseFloat(currentPower.value);
+                document.getElementById('current-power').textContent = 
+                    (power * 1000).toFixed(0) + ' W (' + power.toFixed(2) + ' kW)';
+            }
+            
+            // Napětí
+            const voltage = data.consumption_data.find(item => item.code === 'voltage');
+            if (voltage) {
+                document.getElementById('voltage').textContent = 
+                    parseFloat(voltage.value).toLocaleString('cs-CZ') + ' V';
+            }
+            
+            // Stav zařízení
+            const isOnline = data.current_power_w > 0;
+            const statusElement = document.getElementById('device-status');
+            statusElement.textContent = isOnline ? 'Online' : 'Offline';
+            statusElement.className = 'data-value ' + (isOnline ? 'online' : 'offline');
+            
+            // Poslední aktualizace
+            document.getElementById('last-update').textContent = new Date().toLocaleString('cs-CZ');
+        }
+        
+        // Zobrazení chyby
+        function showError(message) {
+            document.getElementById('device-status').textContent = 'Chyba';
+            document.getElementById('device-status').className = 'data-value offline';
+            document.getElementById('total-consumption').textContent = 'N/A';
+            document.getElementById('current-power').textContent = 'N/A';
+            document.getElementById('voltage').textContent = 'N/A';
+            document.getElementById('last-update').textContent = message;
+        }
+        
+        // Funkce pro manuální volání API
+        async function callAPI(endpoint) {
+            const responseDiv = document.getElementById(endpoint.replace('/', '') + '-response');
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response loading';
+            responseDiv.textContent = 'Načítám...';
+            
+            try {
+                const response = await fetch(`api.php${endpoint}`);
+                const data = await response.json();
+                
+                responseDiv.className = 'response ' + (data.success ? 'success' : 'error');
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.className = 'response error';
+                responseDiv.textContent = 'Chyba: ' + error.message;
+            }
+        }
+        
+        // Nastavení historického rozhraní
+        function setupHistoryInterface() {
+            updateDateDisplay();
+        }
+        
+        // Nastavení období
+        function setPeriod(period) {
+            currentPeriod = period;
+            
+            // Aktualizace tlačítek
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-period="${period}"]`).classList.add('active');
+            
+            // Reset na aktuální datum
+            currentDate = new Date();
+            updateDateDisplay();
+            loadHistoryData();
+        }
+        
+        // Změna data
+        function changeDate(direction) {
+            if (currentPeriod === 'day') {
+                currentDate.setDate(currentDate.getDate() + direction);
+            } else if (currentPeriod === 'week') {
+                currentDate.setDate(currentDate.getDate() + (direction * 7));
+            } else if (currentPeriod === 'month') {
+                currentDate.setMonth(currentDate.getMonth() + direction);
+            }
+            
+            updateDateDisplay();
+            loadHistoryData();
+        }
+        
+        // Aktualizace zobrazení data
+        function updateDateDisplay() {
+            const options = { month: 'short', day: 'numeric' };
+            document.getElementById('current-date-display').textContent = 
+                currentDate.toLocaleDateString('cs-CZ', options);
+        }
+        
+        // Načtení historických dat
+        async function loadHistoryData() {
+            try {
+                const startDate = getStartDate();
+                const endDate = getEndDate();
+                
+                // Načteme denní data pro statistiky
+                const dailyResponse = await fetch(`api.php/database?start_date=${startDate}&end_date=${endDate}&type=daily`);
+                const dailyData = await dailyResponse.json();
+                
+                // Načteme hodinová data pro graf
+                const hourlyResponse = await fetch(`api.php/database?start_date=${startDate}&end_date=${endDate}&type=hourly`);
+                const hourlyData = await hourlyResponse.json();
+                
+                if (dailyData.success && hourlyData.success) {
+                    displayHistoryData(dailyData.data, hourlyData.data);
+                } else {
+                    showHistoryError('Chyba při načítání historických dat');
+                }
+            } catch (error) {
+                showHistoryError('Chyba při načítání dat: ' + error.message);
+            }
+        }
+        
+        // Získání počátečního data
+        function getStartDate() {
+            const date = new Date(currentDate);
+            if (currentPeriod === 'day') {
+                return date.toISOString().split('T')[0];
+            } else if (currentPeriod === 'week') {
+                date.setDate(date.getDate() - 6);
+                return date.toISOString().split('T')[0];
+            } else if (currentPeriod === 'month') {
+                date.setDate(1);
+                return date.toISOString().split('T')[0];
+            }
+        }
+        
+        // Získání koncového data
+        function getEndDate() {
+            return currentDate.toISOString().split('T')[0];
+        }
+        
+        // Zobrazení historických dat
+        function displayHistoryData(dailyData, hourlyData) {
+            if (dailyData.length === 0) {
+                showHistoryError('Žádná data pro vybrané období');
+                return;
+            }
+            
+            // Aktualizace hlavní spotřeby - spotřeba za vybraný den
+            let dailyConsumption = 0;
+            if (dailyData.length > 0) {
+                // Pro denní zobrazení vezmeme první (nejnovější) záznam
+                dailyConsumption = parseFloat(dailyData[0].daily_consumption) || 0;
+                console.log('Denní data:', dailyData[0]);
+                console.log('Denní spotřeba:', dailyConsumption);
+            }
+            document.getElementById('total-consumption-display').textContent = dailyConsumption.toFixed(2);
+            
+            // Aktualizace statistik z denních dat
+            const avgPower = dailyData.reduce((sum, item) => sum + (parseFloat(item.avg_power) || 0), 0) / dailyData.length;
+            const maxPower = Math.max(...dailyData.map(item => parseFloat(item.max_power) || 0));
+            const totalMeasurements = dailyData.reduce((sum, item) => sum + (parseInt(item.measurements_count) || 0), 0);
+            
+            document.getElementById('avg-power-display').textContent = (avgPower / 1000).toFixed(2) + ' kW';
+            document.getElementById('max-power-display').textContent = (maxPower / 1000).toFixed(2) + ' kW';
+            document.getElementById('measurements-count').textContent = totalMeasurements;
+            
+            // Vytvoření grafu s hodinovými daty
+            createChart(hourlyData, dailyConsumption);
+        }
+        
+        // Vytvoření grafu
+        function createChart(hourlyData, dailyConsumption) {
+            const canvas = document.getElementById('consumption-chart');
+            const ctx = canvas.getContext('2d');
+            
+            // Vymazání předchozího grafu
+            if (chart) {
+                chart.destroy();
+            }
+            
+            if (!hourlyData || hourlyData.length === 0) {
+                // Žádná hodinová data - zobrazíme prázdný graf
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#6c757d';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Žádná hodinová data', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Příprava dat pro graf - všech 24 hodin
+            const labels = [];
+            const consumptionData = [];
+            
+            // Vytvoříme pole pro 24 hodin
+            const hourlyConsumption = new Array(24).fill(0);
+            
+            // Naplníme data z API
+            console.log('Hodinová data:', hourlyData);
+            hourlyData.forEach(item => {
+                const hour = parseInt(item.hour);
+                if (hour >= 0 && hour < 24) {
+                    hourlyConsumption[hour] = parseFloat(item.hourly_consumption) || 0;
+                    console.log(`Hodina ${hour}: ${hourlyConsumption[hour]} kWh`);
+                }
+            });
+            
+            // Vytvoříme labely a data pro všech 24 hodin
+            for (let i = 0; i < 24; i++) {
+                labels.push(i.toString().padStart(2, '0') + ':00');
+                consumptionData.push(hourlyConsumption[i]);
+            }
+            
+            console.log('Labels:', labels);
+            console.log('Consumption data:', consumptionData);
+            
+            // Vytvoření grafu
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Spotřeba (kWh)',
+                        data: consumptionData,
+                        backgroundColor: consumptionData.map((value, index) => {
+                            const currentHour = new Date().getHours();
+                            return index === currentHour ? '#28a745' : '#6c757d';
+                        }),
+                        borderColor: consumptionData.map((value, index) => {
+                            const currentHour = new Date().getHours();
+                            return index === currentHour ? '#1e7e34' : '#495057';
+                        }),
+                        borderWidth: 1,
+                        borderRadius: 2,
+                        barThickness: 8,
+                        maxBarThickness: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: `Celková spotřeba za den: ${dailyConsumption.toFixed(2)} kWh`,
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#495057'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e9ecef'
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' kWh';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                maxTicksLimit: 24,
+                                callback: function(value, index) {
+                                    // Zobrazíme jen každou 2. hodinu pro lepší čitelnost
+                                    return index % 2 === 0 ? this.getLabelForValue(value) : '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Zobrazení chyby
+        function showHistoryError(message) {
+            document.getElementById('total-consumption-display').textContent = '0.00';
+            document.getElementById('avg-power-display').textContent = '0 kW';
+            document.getElementById('max-power-display').textContent = '0 kW';
+            document.getElementById('measurements-count').textContent = '0';
+            
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+            
+            const canvas = document.getElementById('consumption-chart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#6c757d';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+        }
+        
+        // Formátování dat
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('cs-CZ');
+        }
+        
+        function formatConsumption(value) {
+            if (value === null || value === undefined) return 'N/A';
+            return parseFloat(value).toFixed(2) + ' kWh';
+        }
+        
+        function formatPower(value) {
+            if (value === null || value === undefined) return 'N/A';
+            return parseFloat(value).toFixed(0) + ' W';
+        }
+        
+        // Automatické obnovování dat každých 30 sekund
+        setInterval(loadCurrentData, 30000);
+    </script>
+</body>
+</html>
